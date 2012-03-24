@@ -1,0 +1,89 @@
+diff -ruN gcc-4.5.3.orig/config.sub gcc-4.5.3/config.sub
+--- gcc-4.5.3.orig/config.sub	2010-03-23 09:26:40.000000000 -0500
++++ gcc-4.5.3/config.sub	2012-03-22 22:07:19.000000000 -0500
+@@ -719,6 +719,10 @@
+ 		basic_machine=i386-unknown
+ 		os=-vsta
+ 		;;
++	x86-fmios* | i*86-fmios*)
++		basic_machine=i386-unknown
++		os=-fmios
++		;;
+ 	iris | iris4d)
+ 		basic_machine=mips-sgi
+ 		case $os in
+@@ -1303,7 +1307,7 @@
+ 	      | -openbsd* | -solidbsd* \
+ 	      | -ekkobsd* | -kfreebsd* | -freebsd* | -riscix* | -lynxos* \
+ 	      | -bosx* | -nextstep* | -cxux* | -aout* | -elf* | -oabi* \
+-	      | -ptx* | -coff* | -ecoff* | -winnt* | -domain* | -vsta* \
++	      | -ptx* | -coff* | -ecoff* | -winnt* | -domain* | -vsta* | -fmios* \
+ 	      | -udi* | -eabi* | -lites* | -ieee* | -go32* | -aux* \
+ 	      | -chorusos* | -chorusrdb* | -cegcc* \
+ 	      | -cygwin* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
+diff -ruN gcc-4.5.3.orig/configure gcc-4.5.3/configure
+--- gcc-4.5.3.orig/configure	2011-01-25 09:49:54.000000000 -0600
++++ gcc-4.5.3/configure	2012-03-22 22:08:59.000000000 -0500
+@@ -3125,6 +3125,9 @@
+   i[3456789]86-*-vsta)
+     noconfigdirs="$noconfigdirs tcl expect dejagnu make texinfo bison patch flex byacc send-pr gprof uudecode dejagnu diff guile perl itcl gnuserv gettext"
+     ;;
++  x86-*-fmios* | i[3456789]86-*-fmios*)
++    noconfigdirs="$noconfigdirs tcl expect dejagnu make texinfo bison patch flex byacc send-pr gprof uudecode dejagnu diff guile perl itcl gnuserv gettext"
++    ;;
+   i[3456789]86-*-go32* | i[3456789]86-*-msdosdjgpp*)
+     noconfigdirs="$noconfigdirs tcl tk expect dejagnu send-pr uudecode guile itcl gnuserv libffi"
+     ;;
+@@ -3665,6 +3668,7 @@
+   sh-*-* | sh64-*-*)
+     case "${host}" in
+       i[3456789]86-*-vsta) ;; # don't add gprof back in
++      x86-*-fmios* | i[3456789]86-*-fmios*) ;; # don't add gprof back in
+       i[3456789]86-*-go32*) ;; # don't add gprof back in
+       i[3456789]86-*-msdosdjgpp*) ;; # don't add gprof back in
+       *) skipdirs=`echo " ${skipdirs} " | sed -e 's/ gprof / /'` ;;
+diff -ruN gcc-4.5.3.orig/configure.ac gcc-4.5.3/configure.ac
+--- gcc-4.5.3.orig/configure.ac	2011-01-25 09:49:54.000000000 -0600
++++ gcc-4.5.3/configure.ac	2012-03-22 22:08:23.000000000 -0500
+@@ -368,6 +368,9 @@
+   i[[3456789]]86-*-vsta)
+     noconfigdirs="$noconfigdirs tcl expect dejagnu make texinfo bison patch flex byacc send-pr gprof uudecode dejagnu diff guile perl itcl gnuserv gettext"
+     ;;
++  x86-*-fmios* | i[[3456789]]86-*-fmios*)
++    noconfigdirs="$noconfigdirs tcl expect dejagnu make texinfo bison patch flex byacc send-pr gprof uudecode dejagnu diff guile perl itcl gnuserv gettext"
++    ;;
+   i[[3456789]]86-*-go32* | i[[3456789]]86-*-msdosdjgpp*)
+     noconfigdirs="$noconfigdirs tcl tk expect dejagnu send-pr uudecode guile itcl gnuserv libffi"
+     ;;
+@@ -902,6 +905,7 @@
+   sh-*-* | sh64-*-*)
+     case "${host}" in
+       i[[3456789]]86-*-vsta) ;; # don't add gprof back in
++      x86-*-fmios* | i[[3456789]]86-*-fmios*) ;; # don't add gprof back in
+       i[[3456789]]86-*-go32*) ;; # don't add gprof back in
+       i[[3456789]]86-*-msdosdjgpp*) ;; # don't add gprof back in
+       *) skipdirs=`echo " ${skipdirs} " | sed -e 's/ gprof / /'` ;;
+--- gcc-4.5.3.orig/gcc/config.gcc	2011-02-26 19:06:15.000000000 -0600
++++ gcc-4.5.3/gcc/config.gcc	2012-03-22 22:35:22.000000000 -0500
+@@ -1118,6 +1118,10 @@
+ 	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h ${fbsd_tm_file} i386/x86-64.h i386/freebsd.h i386/freebsd64.h"
+ 	tmake_file="${tmake_file} i386/t-crtstuff"
+ 	;;
++x86-*-fmios* | i[34567]86-*-fmios*)
++	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h newlib-stdint.h i386/i386elf.h"
++	tmake_file="${tmake_file} i386/t-i386elf t-svr4"
++	;;
+ i[34567]86-*-netbsdelf*)
+ 	tm_file="${tm_file} i386/unix.h i386/att.h dbxelf.h elfos.h netbsd.h netbsd-elf.h i386/netbsd-elf.h"
+ 	;;
+--- gcc-4.5.3.orig/libgcc/config.host	2011-02-23 12:06:29.000000000 -0600
++++ gcc-4.5.3/libgcc/config.host	2012-03-22 23:17:42.000000000 -0500
+@@ -280,6 +280,8 @@
+ 	;;
+ i[34567]86-*-freebsd*)
+ 	;;
++x86-*-fmios* | i[34567]86-*-fmios*)
++	;;
+ x86_64-*-freebsd*)
+ 	;;
+ i[34567]86-*-netbsdelf*)

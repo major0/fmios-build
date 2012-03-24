@@ -1,0 +1,62 @@
+TOOLCHAIN="true"
+VERSION="4.5.3"
+GMP_VER="4.3.2"
+MPC_VER="0.8.1"
+MPFR_VER="2.4.2"
+DESCRIPTION="The GNU Compiler Collection includes front ends for C, as well as libraries for these languages (libstdc++)."
+GNU_URL="http://ftp.gnu.org/pub/gnu/"
+SOURCE_URI="${GNU_URL}/gcc/gcc-${VERSION}/gcc-${VERSION}.tar.gz ${GNU_URL}/gmp/gmp-${GMP_VER}.tar.bz2 http://www.mpfr.org/mpfr-${MPFR_VER}/mpfr-${MPFR_VER}.tar.bz2 http://www.multiprecision.org/mpc/download/mpc-${MPC_VER}.tar.gz"
+BDEPENDS="binutils"
+PATCHES="fmios"
+
+pkg_compile()
+{
+	if [ -d "${S}/gcc-${VERSION}" ]; then
+		mv "${S}/gcc-${VERSION}"/* "${S}/"
+		rmdir "${S}/gcc-${VERSION}"
+	fi
+	if [ -d "${S}/mpc-${MPC_VER}" ]; then
+		mv "${S}/mpc-${MPC_VER}" "${S}/mpc"
+	fi
+	if [ -d "${S}/gmp-${GMP_VER}" ]; then
+		mv "${S}/gmp-${GMP_VER}" "${S}/gmp"
+	fi
+	if [ -d "${S}/mpfr-${MPFR_VER}" ]; then
+		mv "${S}/mpfr-${MPFR_VER}" "${S}/mpfr"
+	fi
+	if [ ! -d "${S}/build" ]; then
+		mkdir -p "${S}/build"
+	fi
+	cd "${S}/build"
+
+	"${S}/configure" --target="${CHOST}" \
+		--prefix="${BUILDER_SYSROOT}/usr" \
+		--with-sysroot="${BUILDER_SYSROOT}" \
+		--without-headers --with-newlib \
+		--disable-shared --disable-threads \
+		--disable-nls --disable-decimal-float \
+		--disable-libssp --disable-libgomp \
+		--disable-libmudflap --enable-languages=c
+
+	make ${MAKE_OPTS} && make DESTDIR="${D}" install
+
+	mv "${D}/${BUILDER_SYSROOT}/usr" "${D}/usr"
+	cd "${D}"
+	for dir in *; do
+		[ -d "${dir}" ] || continue
+		[ "${dir}" = "usr" ] && continue
+		rm -rf "${dir}"
+	done
+
+	# glibc/eglibc actually need libgcc_eh during compilation, but the
+	# --disable-shared option to GCC's ./configure prevents it from being
+	# compiled.  Ironically, glibc/eglibc do not actually NEED anything
+	# from this library, they just add -lgcc_eh to the link list for no
+	# particular reason., so during this compile we can sort of cheat the
+	# entire process.
+	if [ ! -e "${D}/usr/lib/gcc/${CHOST}/${VERSION}/libgcc_eh.a" ]; then
+		ln -s libgcc.a "${D}/usr/lib/gcc/${CHOST}/${VERSION}/libgcc_eh.a"
+	fi
+}
+
+# vim: syntax=sh
