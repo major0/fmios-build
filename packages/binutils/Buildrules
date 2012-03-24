@@ -1,0 +1,27 @@
+TOOLCHAIN="true"
+VERSION="2.22"
+DESCRIPTION="The GNU Binary Utilities, or binutils, comprise a collection of programming tools capable of creating and managing binary programs, object files, libraries, profile data, and assembly source code originally written by programmers at Cygnus Solutions."
+SOURCE_URI="http://ftp.gnu.org/pub/gnu/binutils/binutils-${VERSION}.tar.gz"
+PATCHES="fmios"
+
+pkg_compile()
+{
+	[ -d "${S}/build" ] || mkdir "${S}/build"
+	cd "${S}/build"
+
+	"${S}/configure" --target="${CHOST}" \
+		--prefix="${BUILDER_SYSROOT}/usr" \
+		--with-sysroot="${BUILDER_SYSROOT}" --disable-nls
+
+	make ${MAKE_OPTS} all && make DESTDIR="${D}" install
+
+	mv "${D}/${BUILDER_SYSROOT}/usr" "${D}/usr"
+	cd "${D}"
+	for dir in *; do
+		[ -d "${dir}" ] || continue
+		[ "${dir}" = "usr" ] && continue
+		rm -rf "${dir}"
+	done
+}
+
+# vim: syntax=sh
