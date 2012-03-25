@@ -1,0 +1,23 @@
+diff -ruN grub-1.99.orig/build-aux/config.sub grub-1.99/build-aux/config.sub
+--- grub-1.99.orig/build-aux/config.sub	2011-05-14 15:57:50.000000000 -0500
++++ grub-1.99/build-aux/config.sub	2012-03-25 10:54:14.000000000 -0500
+@@ -736,6 +736,10 @@
+ 		basic_machine=i386-unknown
+ 		os=-vsta
+ 		;;
++	i*86-fmios* | fmios*)
++		basic_machine=i386-unknown
++		os=-fmios
++		;;
+ 	iris | iris4d)
+ 		basic_machine=mips-sgi
+ 		case $os in
+@@ -1333,7 +1337,7 @@
+ 	      | -openbsd* | -solidbsd* \
+ 	      | -ekkobsd* | -kfreebsd* | -freebsd* | -riscix* | -lynxos* \
+ 	      | -bosx* | -nextstep* | -cxux* | -aout* | -elf* | -oabi* \
+-	      | -ptx* | -coff* | -ecoff* | -winnt* | -domain* | -vsta* \
++	      | -ptx* | -coff* | -ecoff* | -winnt* | -domain* | -vsta* | -fmios* \
+ 	      | -udi* | -eabi* | -lites* | -ieee* | -go32* | -aux* \
+ 	      | -chorusos* | -chorusrdb* | -cegcc* \
+ 	      | -cygwin* | -pe* | -psos* | -moss* | -proelf* | -rtems* \

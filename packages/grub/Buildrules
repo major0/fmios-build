@@ -2,12 +2,23 @@ TOOLCHAIN="true"
 VERSION="1.99"
 DESCRIPTION="The Grand Unified BootLoader."
 SOURCE_URI="http://ftp.gnu.org/gnu/${NAME}/${NAME}-${VERSION}.tar.gz"
-BDEPENDS="bison flex"
+BDEPENDS="bison flex gcc xorriso"
+PATCHES="fmios"
 
 pkg_compile() {
-	./configure --prefix=/usr
-	make
-	make DESTDIR=${D} install
+	"${S}/configure" --target="${CHOST}" \
+		--prefix="${BUILDER_SYSROOT}/usr" \
+		--with-sysroot="${BUILDER_SYSROOT}" --disable-nls
+
+	make ${MAKE_OPTS} all && make DESTDIR="${D}" install
+
+	mv "${D}/${BUILDER_SYSROOT}/usr" "${D}/usr"
+	cd "${D}"
+	for dir in *; do
+		[ -d "${dir}" ] || continue
+		[ "${dir}" = "usr" ] && continue
+		rm -rf "${dir}"
+	done
 }
 
 # vim: syntax=sh
