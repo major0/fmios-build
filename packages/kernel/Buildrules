@@ -1,3 +1,0 @@
-VERSION="0.1.0"
-DESCRIPTION="The FMI/OS Kernel"
-SOURCE_URI="gitosis://pita/fmios-kernel.git"

@@ -1,1 +1,5 @@
-TARGET="x86"
+CBUILD="$(${CC:-gcc} -dumpmachine)"
+PROJECT_NAME="fmios"
+ARCH="i586"
+VENDOR="pc"
+PLATFORM="fmios"

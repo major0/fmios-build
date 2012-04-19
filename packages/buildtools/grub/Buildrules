@@ -2,7 +2,7 @@ TOOLCHAIN="true"
 VERSION="1.99"
 DESCRIPTION="The Grand Unified BootLoader."
 SOURCE_URI="http://ftp.gnu.org/gnu/${NAME}/${NAME}-${VERSION}.tar.gz"
-BDEPENDS="bison flex gcc xorriso"
+BDEPENDS="buildtools/bison buildtools/flex buildtools/gcc buildtools/xorriso"
 PATCHES="fmios"
 
 pkg_compile() {
