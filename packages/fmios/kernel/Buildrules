@@ -1,5 +1,5 @@
 VERSION="0.1.0"
 DESCRIPTION="The FMI/OS Kernel"
-SOURCE_URI="git://code-unatio.net/fmios-kernel.git?archive=${NAME}-${VERSION}.${ARCHIVE_FORMAT}"
+SOURCE_URI="git://git@code-unatio.net/fmios-kernel.git?archive=${NAME}-${VERSION}.${ARCHIVE_FORMAT}"
 
 # vim: filetype=sh
