@@ -1,19 +1,14 @@
 #!/usr/bin/env build
 
 echo "cleaning: ${1}"
-import "${1}"
 
-if [ ! -z "${TOOLCHAIN}" ]; then
-	rm -f "${L}/.installed"
-	exit 0
-fi
+eval $(build query --environ "${1}")
 
-for dir in "${L}" "${W}" "${D}"; do
-	if [ -d "${dir}" ]; then
-		rm -rf "${dir}" &
+rm -f "${W}/.installed"
+if [ -z "${TOOLCHAIN}" ]; then
+	if [ -d "${W}" ]; then
+		rm -rf "${W}"
 	fi
-done
-
-wait
+fi
 
 # vim: filetype=sh

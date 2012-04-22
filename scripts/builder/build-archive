@@ -1,7 +1,7 @@
 #!/usr/bin/env build
 
 echo "archiving: ${1}"
-import "${1}"
+eval $(build query --environ "${1}")
 
 ARCHIVE_TMP1=
 ARCHIVE_TMP2=
@@ -14,8 +14,8 @@ cleanup()
 trap cleanup EXIT
 set -e
 
-ARCHIVE_TMP1="$(mktemp /tmp/${NAME}-${VERSION}.XXXXXXXX)"
-ARCHIVE_TMP2="$(mktemp /tmp/${NAME}-${VERSION}.XXXXXXXX)"
+ARCHIVE_TMP1="$(mktemp "${BUILDER_TMPDIR}/${NAME}-${VERSION}.XXXXXXXX")"
+ARCHIVE_TMP2="$(mktemp "${BUILDER_TMPDIR}/${NAME}-${VERSION}.XXXXXXXX")"
 
 [ -f "${ARCHIVE_TMP1}" ] || die "failed to create temporary archive for package '${NAME}'"
 [ -f "${ARCHIVE_TMP2}" ] || die "failed to create temporary archive for package '${NAME}'"
@@ -26,17 +26,18 @@ case "${ARCHIVE_FORMAT}" in
 (*)		die "unsupported archive format '${ARCHIVE_FORMAT}'";;
 esac
 
-if [ ! -d "${BUILDER_ATFDIR}" ]; then
-	mkdir -p "${BUILDER_ATFDIR}"
+if [ ! -d "${BUILDER_ATFDIR}/${CATEGORY}" ]; then
+	mkdir -p "${BUILDER_ATFDIR}/${CATEGORY}"
 fi
 
 cd "${D}"
 tar -cvf "${ARCHIVE_TMP1}" .  > "${L}/archive.log" 2>&1
 ${ARCHIVE_COMPRESSOR} "${ARCHIVE_TMP1}" > "${ARCHIVE_TMP2}" 2>> "${L}/archive.log"
-if [ -f "${BUILDER_ATFDIR}/${NAME}-${VERSION}.${ARCHIVE_FORMAT}" ]; then
-	rm -f "${BUILDER_ATFDIR}/${NAME}-${VERSION}.${ARCHIVE_FORMAT}"
+if [ -f "${BUILDER_ATFDIR}/${CATEGORY}/${NAME}-${VERSION}.${ARCHIVE_FORMAT}" ]; then
+	rm -f "${BUILDER_ATFDIR}/${CATEGORY}/${NAME}-${VERSION}.${ARCHIVE_FORMAT}"
 fi
-mv -v "${ARCHIVE_TMP2}" "${BUILDER_ATFDIR}/${NAME}-${VERSION}.${ARCHIVE_FORMAT}" >> "${L}/archive.log" 2>&1
-touch -r "${L}/.compiled" "${BUILDER_ATFDIR}/${NAME}-${VERSION}.${ARCHIVE_FORMAT}"
+mv -v "${ARCHIVE_TMP2}" "${BUILDER_ATFDIR}/${CATEGORY}/${NAME}-${VERSION}.${ARCHIVE_FORMAT}" >> "${L}/archive.log" 2>&1
+cd "${W}"
+rm -rf "${D}"
 
 # vim: filetype=sh
