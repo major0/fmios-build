@@ -1,4 +1,4 @@
-CBUILD="$(${CC:-gcc} -dumpmachine)"
+CBUILD="$(gcc -dumpmachine)"
 PROJECT_NAME="fmios"
 ARCH="i586"
 VENDOR="pc"
