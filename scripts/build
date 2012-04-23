@@ -225,12 +225,15 @@ export PROJECT_NAME ARCHIVE_FORMAT
 ARCH="${ARCH:-$(uname -m)}"
 VENDOR="${VENDOR:-pc}"
 PLATFORM="${PLATFORM:-$(uname -i|tr '[A-Z]' '[a-z]')}"
-LIBC="${LIBC:-gnu}"
-export ARCH VENDOR PLATFORM LIBC
+export ARCH VENDOR PLATFORM
 
 # FIXME We should be defaulting to the build platform for this data if the
 # target platform is unspecified
-CHOST="${ARCH}-${VENDOR}-${PLATFORM}-${LIBC}"
+CHOST="${ARCH}-${VENDOR}-${PLATFORM}"
+if [ ! -z "${LIBC}" ]; then
+	export LIBC
+	CHOST="${CHOST}-${LIBC}"
+fi
 export CHOST
 
 # If the MAKE_OPTS are not set then find the number of CPU's and set them.
@@ -253,9 +256,8 @@ export BUILDER_ATFDIR BUILDER_LIBDIR BUILDER_TOPDIR
 export BUILDER_TMPDIR
 
 # Installation locations for the cross-tools and the target-root
-TOOLDIR="${TOOLDIR:-${BUILDER_TOPDIR}/toolchain}"
 SYSROOT="${SYSROOT:-${BUILDER_TOPDIR}/sysroot}"
-export TOOLDIR SYSROOT
+export SYSROOT
 
 PATH="${BUILDER_LIBDIR}:${PATH}"
 export PATH
