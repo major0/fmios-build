@@ -1,5 +1,10 @@
-CBUILD="$(gcc -dumpmachine)"
-PROJECT_NAME="fmios"
-ARCH="i586"
-VENDOR="pc"
-PLATFORM="fmios"
+PROJECT="fmios"
+CHOST="i586-pc-fmios"
+ARCH="x86"
+
+# Fixup our path data
+TOOLCHAIN="toolchain"
+PATH="${SYSROOT}/${TOOLCHAIN}/bin:${PATH}"
+export TOOLCHAIN PATH
+
+# vim: filetype=sh
