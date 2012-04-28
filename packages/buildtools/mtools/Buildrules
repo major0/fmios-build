@@ -1,12 +1,5 @@
-TOOLCHAIN="true"
 VERSION="4.0.17"
 DESCRIPTION="Mtools is a collection of utilities to access MS-DOS disks from GNU and Unix without mounting them."
 SOURCE_URI="ftp://ftp.gnu.org/gnu/${NAME}/${NAME}-${VERSION}.tar.gz"
-
-pkg_compile() {
-	./configure --prefix=/usr
-	make
-	make DESTDIR="${D}" install
-}
 
 # vim: syntax=sh

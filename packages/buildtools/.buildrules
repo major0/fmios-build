@@ -17,4 +17,14 @@ toolchain_fixup()
 	unset tooldir_fixup_prefix
 )}
 
+pkg_compile() {
+	[ -d "${S}/build" ] || mkdir "${S}/build"
+	cd "${S}/build"
+	"${S}/configure" --build="${CBUILD}" --host="${CBUILD}" --target="${CHOST}" \
+		--prefix="${SYSROOT}/${TOOLCHAIN}" \
+		--with-sysroot="${SYSROOT}" --disable-nls
+	make ${MAKE_OPTS} all && make DESTDIR="${D}" install
+	toolchain_fixup "${D}"
+}
+
 # vim: filetype=sh

@@ -1,12 +1,14 @@
-TOOLCHAIN="1"
 VERSION="1.2.0"
 DESCRIPTION="Mtools is a collection of utilities for creating extended RockRidge ISO images."
 SOURCE_URI="ftp://ftp.gnu.org/gnu/${NAME}/${NAME}-${VERSION}.tar.gz"
 
 pkg_compile() {
-	./configure --prefix=/usr
-	make
-	make DESTDIR="${D}" install
+	# Contrary to the build design of most GNU tools, Xorriso doesn't like
+	# configuring into a build/ directory
+	"${S}/configure" --prefix="${SYSROOT}/${TOOLCHAIN}" \
+		--with-sysroot="${SYSROOT}" --disable-nls
+	make ${MAKE_OPTS} all && make DESTDIR="${D}" install
+	toolchain_fixup "${D}"
 }
 
 # vim: syntax=sh

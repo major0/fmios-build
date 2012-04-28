@@ -1,23 +1,6 @@
-TOOLCHAIN="true"
 VERSION="2.5"
 DESCRIPTION="Bison is a general-purpose parser generator that converts an annotated context-free grammar into a deterministic LR or generalized LR (GLR) parser employing LALR(1) parser tables."
 SOURCE_URI="http://ftp.gnu.org/gnu/${NAME}/${NAME}-${VERSION}.tar.gz"
-
-pkg_compile() {
-	[ -d "${S}/build" ] || mkdir "${S}/build"
-	cd "${S}/build"
-
-	"${S}/configure" --prefix="${BUILDER_SYSROOT}/usr"
-
-	make ${MAKE_OPTS} all && make DESTDIR="${D}" install
-
-	mv "${D}/${BUILDER_SYSROOT}/usr" "${D}/usr"
-	cd "${D}"
-	for dir in *; do
-		[ -d "${dir}" ] || continue
-		[ "${dir}" = "usr" ] && continue
-		rm -rf "${dir}"
-	done
-}
+BDEPENDS="buildtools/m4"
 
 # vim: syntax=sh
