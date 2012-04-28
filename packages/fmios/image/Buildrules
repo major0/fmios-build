@@ -4,8 +4,9 @@ BDEPENDS="fmios/kernel buildtools/grub buildtools/xorriso"
 
 pkg_compile()
 {
-	install -D -m 0755 "${SYSROOT}/boot/fmios-kernel" "${S}/boot/fmios-kernel"
-	install -d "${D}/boot"
+	install -d "${S}/boot/grub" "${D}/boot"
+	install -m 0755 "${SYSROOT}/boot/fmios-kernel" "${S}/boot/fmios-kernel"
+	sed -e "s/@VERSION@/${VERSION}/" "${F}/grub.cfg" > "${S}/boot/grub/grub.cfg"
 	"${CHOST}-grub-mkrescue" --output="${D}/boot/fmios-image.iso" "${S}"
 }
 
