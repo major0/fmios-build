@@ -1,1 +1,20 @@
-TOOLCHAIN=1
+NOCLEAN=1
+eval $(build-query --toolchain "${CBUILD}")
+
+toolchain_fixup()
+{(
+	cd "${1}"
+
+	echo "compile: moving '${1}/${SYSROOT}/${TOOLCHAIN}' -> '${1}/'"
+	mv "./${SYSROOT}/${TOOLCHAIN}" "./"
+
+	tooldir_fixup_prefix="${SYSROOT#/*/}"
+	tooldir_fixup_prefix="${SYSROOT%/${tooldir_fixup_prefix}}"
+
+	echo "compile: erasing '${1}/${tooldir_fixup_prefix}'"
+	find ".${tooldir_fixup_prefix}" -delete
+
+	unset tooldir_fixup_prefix
+)}
+
+# vim: filetype=sh

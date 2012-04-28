@@ -1,4 +1,3 @@
-TOOLCHAIN="true"
 VERSION="4.5.3"
 GMP_VER="4.3.2"
 MPC_VER="0.8.1"
@@ -11,18 +10,14 @@ PATCHES="fmios"
 
 pkg_compile()
 {
-	if [ -d "${S}/gcc-${VERSION}" ]; then
-		mv "${S}/gcc-${VERSION}"/* "${S}/"
-		rmdir "${S}/gcc-${VERSION}"
+	if [ -d "${W}/mpc-${MPC_VER}" ]; then
+		mv "${W}/mpc-${MPC_VER}" "${S}/mpc"
 	fi
-	if [ -d "${S}/mpc-${MPC_VER}" ]; then
-		mv "${S}/mpc-${MPC_VER}" "${S}/mpc"
+	if [ -d "${W}/gmp-${GMP_VER}" ]; then
+		mv "${W}/gmp-${GMP_VER}" "${S}/gmp"
 	fi
-	if [ -d "${S}/gmp-${GMP_VER}" ]; then
-		mv "${S}/gmp-${GMP_VER}" "${S}/gmp"
-	fi
-	if [ -d "${S}/mpfr-${MPFR_VER}" ]; then
-		mv "${S}/mpfr-${MPFR_VER}" "${S}/mpfr"
+	if [ -d "${W}/mpfr-${MPFR_VER}" ]; then
+		mv "${W}/mpfr-${MPFR_VER}" "${S}/mpfr"
 	fi
 	if [ ! -d "${S}/build" ]; then
 		mkdir -p "${S}/build"
@@ -30,8 +25,8 @@ pkg_compile()
 	cd "${S}/build"
 
 	"${S}/configure" --target="${CHOST}" \
-		--prefix="${BUILDER_SYSROOT}/usr" \
-		--with-sysroot="${BUILDER_SYSROOT}" \
+		--prefix="${SYSROOT}/${TOOLCHAIN}" \
+		--with-sysroot="${SYSROOT}" \
 		--without-headers --with-newlib \
 		--disable-shared --disable-threads \
 		--disable-nls --disable-decimal-float \
@@ -40,13 +35,7 @@ pkg_compile()
 
 	make ${MAKE_OPTS} && make DESTDIR="${D}" install
 
-	mv "${D}/${BUILDER_SYSROOT}/usr" "${D}/usr"
-	cd "${D}"
-	for dir in *; do
-		[ -d "${dir}" ] || continue
-		[ "${dir}" = "usr" ] && continue
-		rm -rf "${dir}"
-	done
+	toolchain_fixup "${D}"
 
 	# glibc/eglibc actually need libgcc_eh during compilation, but the
 	# --disable-shared option to GCC's ./configure prevents it from being
@@ -54,8 +43,8 @@ pkg_compile()
 	# from this library, they just add -lgcc_eh to the link list for no
 	# particular reason., so during this compile we can sort of cheat the
 	# entire process.
-	if [ ! -e "${D}/usr/lib/gcc/${CHOST}/${VERSION}/libgcc_eh.a" ]; then
-		ln -s libgcc.a "${D}/usr/lib/gcc/${CHOST}/${VERSION}/libgcc_eh.a"
+	if [ ! -e "${D}/${TOOLCHAIN}/lib/gcc/${CHOST}/${VERSION}/libgcc_eh.a" ]; then
+		ln -s libgcc.a "${D}/${TOOLCHAIN}/lib/gcc/${CHOST}/${VERSION}/libgcc_eh.a"
 	fi
 }
 
