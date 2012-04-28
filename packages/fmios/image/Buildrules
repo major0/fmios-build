@@ -1,0 +1,12 @@
+VERSION="0.1.0"
+DESCRIPTION="Bootable FMI/OS image"
+BDEPENDS="fmios/kernel buildtools/grub buildtools/xorriso"
+
+pkg_compile()
+{
+	install -D -m 0755 "${SYSROOT}/boot/fmios-kernel" "${S}/boot/fmios-kernel"
+	install -d "${D}/boot"
+	"${CHOST}-grub-mkrescue" --output="${D}/boot/fmios-image.iso" "${S}"
+}
+
+# vim: filetype=sh
