@@ -2,6 +2,11 @@ VERSION="0.1.0"
 DESCRIPTION="Bootable FMI/OS image"
 BDEPENDS="fmios/kernel buildtools/grub buildtools/xorriso"
 
+pkg_prep()
+{
+	mkdir -p "${S}"
+}
+
 pkg_compile()
 {
 	install -d "${S}/boot/grub" "${D}/boot"
