@@ -1,6 +1,13 @@
 VERSION="0.1.0"
 DESCRIPTION="The FMI/OS Kernel"
 SOURCE_URI="git://code-unatio.net/fmios-kernel.git?archive=${NAME}-${VERSION}.${ARCHIVE_FORMAT}"
-BDEPENDS="toolchain/gcc"
+BDEPENDS="toolchain/gcc toolchain/autoconf"
+
+pkg_compile()
+{
+	autoconf
+	./configure --prefix="/" --host="${CHOST}"
+	make ${MAKE_OPTS} && make DESTDIR="${D}" install
+}
 
 # vim: filetype=sh
