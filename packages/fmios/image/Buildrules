@@ -1,6 +1,6 @@
 VERSION="0.1.0"
 DESCRIPTION="Bootable FMI/OS image"
-BDEPENDS="fmios/kernel buildtools/grub buildtools/xorriso"
+BDEPENDS="fmios/kernel toolchain/grub toolchain/xorriso"
 
 pkg_prep()
 {

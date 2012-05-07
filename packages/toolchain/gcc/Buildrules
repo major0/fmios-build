@@ -5,7 +5,7 @@ MPFR_VER="2.4.2"
 DESCRIPTION="The GNU Compiler Collection includes front ends for C, as well as libraries for these languages (libstdc++)."
 GNU_URL="http://ftp.gnu.org/pub/gnu/"
 SOURCE_URI="${GNU_URL}/gcc/gcc-${VERSION}/gcc-${VERSION}.tar.gz ${GNU_URL}/gmp/gmp-${GMP_VER}.tar.bz2 http://www.mpfr.org/mpfr-${MPFR_VER}/mpfr-${MPFR_VER}.tar.bz2 http://www.multiprecision.org/mpc/download/mpc-${MPC_VER}.tar.gz"
-BDEPENDS="buildtools/binutils"
+BDEPENDS="toolchain/binutils"
 PATCHES="fmios"
 
 pkg_compile()

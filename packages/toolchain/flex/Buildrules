@@ -1,6 +1,6 @@
 VERSION="2.5.35"
 DESCRIPTION="Flex is a tool for generating scanners."
 SOURCE_URI="http://downloads.sourceforge.net/project/flex/flex/flex-2.5.35/flex-2.5.35.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fflex%2F&ts=1332660558&use_mirror=softlayer"
-BDEPENDS="buildtools/m4"
+BDEPENDS="toolchain/m4"
 
 # vim: syntax=sh

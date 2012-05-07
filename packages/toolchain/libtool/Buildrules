@@ -1,0 +1,20 @@
+VERSION="2.4.2"
+DESCRIPTION="GNU libtool is a generic library support script. Libtool hides the complexity of using shared libraries behind a consistent, portable interface."
+SOURCE_URI="http://ftp.gnu.org/pub/gnu/${NAME}/${NAME}-${VERSION}.tar.gz"
+BDEPENDS="toolchain/gcc"
+
+pkg_compile()
+{
+	[ -d "${S}/build" ] || mkdir "${S}/build"
+	cd "${S}/build"
+
+	"${S}/configure" --target="${CHOST}" \
+		--prefix="${SYSROOT}/${TOOLCHAIN}" \
+		--with-sysroot="${SYSROOT}" --disable-nls
+
+	make ${MAKE_OPTS} all && make DESTDIR="${D}" install
+
+	toolchain_fixup "${D}"
+}
+
+# vim: syntax=sh

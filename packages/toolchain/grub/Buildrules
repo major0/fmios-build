@@ -1,7 +1,7 @@
 VERSION="1.99"
 DESCRIPTION="The Grand Unified BootLoader."
 SOURCE_URI="http://ftp.gnu.org/gnu/${NAME}/${NAME}-${VERSION}.tar.gz"
-BDEPENDS="buildtools/bison buildtools/flex buildtools/gcc"
+BDEPENDS="toolchain/bison toolchain/flex toolchain/gcc"
 PATCHES="fmios"
 
 # vim: syntax=sh

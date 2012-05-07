@@ -1,0 +1,20 @@
+VERSION="1.11.1"
+DESCRIPTION="Automake is a tool for automatically generating 'Makefile.in' files compliant with the GNU Coding Standards."
+SOURCE_URI="http://ftp.gnu.org/pub/gnu/${NAME}/${NAME}-${VERSION}.tar.gz"
+BDEPENDS="toolchain/gcc toolchain/autoconf"
+
+pkg_compile()
+{
+	[ -d "${S}/build" ] || mkdir "${S}/build"
+	cd "${S}/build"
+
+	"${S}/configure" --target="${CHOST}" \
+		--prefix="${SYSROOT}/${TOOLCHAIN}" \
+		--with-sysroot="${SYSROOT}" --disable-nls
+
+	make ${MAKE_OPTS} all && make DESTDIR="${D}" install
+
+	toolchain_fixup "${D}"
+}
+
+# vim: syntax=sh
