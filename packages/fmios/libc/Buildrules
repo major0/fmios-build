@@ -1,0 +1,45 @@
+VERSION="1.20.0"
+DESCRIPTION="Newlib C Headers"
+SOURCE_URI="ftp://sources.redhat.com/pub/newlib/newlib-${VERSION}.tar.gz"
+PATCHES="fmios"
+BDEPENDS="toolchain/cc1"
+
+pkg_prep()
+{
+	if [ -d "newlib-${VERSION}" ]; then
+		mv "newlib-${VERSION}" "${S}"
+	fi
+}
+
+pkg_compile()
+{
+	CC="${CC}"
+	CC_FOR_BUILD="${CC}"
+	export CC CC_FOR_BUILD
+
+	cd "${S}/newlib"
+	./configure --host="${CHOST}" --prefix="/usr"
+	make CC_FOR_BUILD="${CBUILD}-gcc" -C doc
+	make ${MAKE_OPTS}
+	make DESTDIR="${D}" install
+
+	# Newlib tends to stuff things in strange places...
+	if [ -d "${D}/usr/${CHOST}" ]; then
+		mv "${D}/usr/${CHOST}/"* "${D}/usr"
+		rmdir "${D}/usr/${CHOST}"
+	fi
+	if [ -L "${D}/usr/lib/libc.a" ] && \
+	   [ -f "${D}/usr/lib/libg.a" ]; then
+		rm -f "${D}/usr/lib/libc.a"
+		ln -s libg.a "${D}/usr/lib/libc.a"
+	fi
+
+	# This is a placeholder until we fix up a crt0/1 for FMI/OS
+	if [ ! -f "${D}/lib/crt0.o" ]; then
+		install -d "${D}/lib"
+		echo "static int unused;" | ${CC} -xc -c -o "${D}/lib/crt0.o" -
+	fi
+
+}
+
+# vim: filetype=sh

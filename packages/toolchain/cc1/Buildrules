@@ -5,11 +5,14 @@ MPFR_VER="2.4.2"
 DESCRIPTION="The GNU Compiler Collection includes front ends for C, as well as libraries for these languages (libstdc++)."
 GNU_URL="http://ftp.gnu.org/pub/gnu/"
 SOURCE_URI="${GNU_URL}/gcc/gcc-${VERSION}/gcc-${VERSION}.tar.gz ${GNU_URL}/gmp/gmp-${GMP_VER}.tar.bz2 http://www.mpfr.org/mpfr-${MPFR_VER}/mpfr-${MPFR_VER}.tar.bz2 http://www.multiprecision.org/mpc/download/mpc-${MPC_VER}.tar.gz"
-BDEPENDS="toolchain/cc1 fmios/libc"
+BDEPENDS="toolchain/binutils"
 PATCHES="fmios"
 
 pkg_prep()
 {
+	if [ -d "${W}/gcc-${VERSION}" ]; then
+		mv "${W}/gcc-${VERSION}" "${S}"
+	fi
 	if [ -d "${W}/mpc-${MPC_VER}" ]; then
 		mv "${W}/mpc-${MPC_VER}" "${S}/mpc"
 	fi
@@ -31,6 +34,7 @@ pkg_compile()
 	"${S}/configure" --target="${CHOST}" \
 		--prefix="${SYSROOT}/${TOOLCHAIN}" \
 		--with-sysroot="${SYSROOT}" \
+		--without-headers --with-newlib \
 		--disable-shared --disable-threads \
 		--disable-nls --disable-decimal-float \
 		--disable-libssp --disable-libgomp \

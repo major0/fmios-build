@@ -1,20 +1,13 @@
 VERSION="0.1.0"
 NEWLIB_VERSION="1.20.0"
 DESCRIPTION="The FMI/OS Kernel"
-SOURCE_URI="git://code-unatio.net/fmios-kernel.git?archive=${NAME}-${VERSION}.${ARCHIVE_FORMAT} ftp://sources.redhat.com/pub/newlib/newlib-${NEWLIB_VERSION}.tar.gz"
+SOURCE_URI="git://code-unatio.net/fmios-kernel.git?archive=${NAME}-${VERSION}.${ARCHIVE_FORMAT}"
 BDEPENDS="toolchain/gcc toolchain/autoconf"
-
-pkg_prep()
-{
-	if [ ! -d "${S}/newlib" ]; then
-		mv "${W}/newlib-${NEWLIB_VERSION}/newlib" "${S}"
-	fi
-}
 
 pkg_compile()
 {
 	autoconf
-	./configure --prefix="/" --host="${CHOST}" --enable-multiboot1
+	./configure --prefix="/" --host="${CHOST}"
 	make ${MAKE_OPTS} && make DESTDIR="${D}" install
 }
 
