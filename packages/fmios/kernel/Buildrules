@@ -14,7 +14,7 @@ pkg_prep()
 pkg_compile()
 {
 	autoconf
-	./configure --prefix="/" --host="${CHOST}"
+	./configure --prefix="/" --host="${CHOST}" --enable-multiboot1
 	make ${MAKE_OPTS} && make DESTDIR="${D}" install
 }
 
