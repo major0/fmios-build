@@ -1,3 +1,4 @@
+NOCLEAN="1"
 VERSION="1.20.0"
 DESCRIPTION="Newlib C Headers"
 SOURCE_URI="ftp://sources.redhat.com/pub/newlib/newlib-${VERSION}.tar.gz"
