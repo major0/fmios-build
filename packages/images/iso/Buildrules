@@ -9,10 +9,10 @@ pkg_prep()
 
 pkg_compile()
 {
-	install -d "${S}/boot/grub" "${D}/boot"
+	install -d "${S}/boot/grub" "${D}/images"
 	install -m 0755 "${SYSROOT}/boot/fmios-kernel" "${S}/boot/fmios-kernel"
 	sed -e "s/@VERSION@/${VERSION}/" "${F}/grub.cfg" > "${S}/boot/grub/grub.cfg"
-	"${CHOST}-grub-mkrescue" --output="${D}/boot/fmios-image.iso" "${S}"
+	"${CHOST}-grub-mkrescue" --output="${D}/images/fmios-image.iso" "${S}"
 }
 
 # vim: filetype=sh
