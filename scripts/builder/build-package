@@ -28,6 +28,14 @@ pkg_prep()
 
 pkg_compile()
 {
+	CC="${CHOST}-gcc"
+	CXX="${CHOST}-g++"
+	AS="${CHOST}-as"
+	LD="${CHOST}-ld"
+	STRIP="${CHOST}-strip"
+	RANLIB="${CHOST}-ranlib"
+	export CC CXX AS LD STRIP RANLIB
+
 	# FIXME these defaults need moved elsewhere
 	if [ -f "configure" ]; then
 		./configure	--host="${CHOST}"			\
@@ -38,7 +46,8 @@ pkg_compile()
 	fi
 
 	# FIXME we need a bunch of make options in here
-	make ${MAKE_OPTS} && make DESTDIR="${D}" install
+	make ${MAKE_OPTS}
+	make DESTDIR="${D}" install
 }
 
 import "${1}"
@@ -76,11 +85,19 @@ else
 		fi
 		echo "prepping ${1} from source: '${BUILDER_SRCDIR}/${file}"
 
-		tar xavf "${BUILDER_SRCDIR}/${file}" -C "${W}" >> "${PKG_LOGFILE}" 2>&1
+		case "${file}" in
+		(*.tar.bz2|*.tbz2|*.tar.xz|*.txz|*.tar.Z|*.tar.z|*.tz|*.tar.gz|*.tgz)
+			tar xavf "${BUILDER_SRCDIR}/${file}" -C "${W}" >> "${PKG_LOGFILE}" 2>&1;;
+		(*.zip)
+			unzip "${BUILDER_SRCDIR}/${file}" -d "${W}" >> "${PKG_LOGFILE}" 2>&1;;
+		(*.jar)
+			cp "${BUILDER_SRCDIR}/${file}" "${W}" >> "${PKG_LOGFILE}" 2>&1;;
+		esac
 	done
 fi
 
-cd "${W}" && pkg_prep >> "${PKG_LOGFILE}" 2>&1
+cd "${W}"
+pkg_prep >> "${PKG_LOGFILE}" 2>&1
 
 # FIXME wrap up the patch command with something more functional
 if [ ! -z "${PATCHES}" ]; then
@@ -103,8 +120,9 @@ PKG_LOGFILE="${L}/compile.log"
 
 # pkgconfig can be a right pita...
 PKG_CONFIG_LIBDIR="${SYSROOT}/usr/share/pkgconfig:${SYSROOT}/usr/lib/pkgconfig"
+PKG_CONFIG_SYSROOT_DIR="${SYSROOT}"
 export PKG_CONFIG_LIBDIR PKG_CONFIG_PATH
-export PKG_CONFIG_SYSROOT_DIR="${SYSROOT}"
+export PKG_CONFIG_SYSROOT_DIR
 
 # Don't pass along the builder jobcontrol data to child processes
 unset MAKEFLAGS
@@ -119,7 +137,8 @@ import "${1}"
 ## Build the source and install it into the DESTDIR
 # Ironically this is the heart of what the build-engine does, and yet it has
 # been reduced to the simplest component of the entire system.
-cd "${S}" && pkg_compile >> "${PKG_LOGFILE}" 2>&1
+cd "${S}"
+pkg_compile >> "${PKG_LOGFILE}" 2>&1
 
 ## Save Space!
 # At this point everything important should be installed into ${D}, and any
